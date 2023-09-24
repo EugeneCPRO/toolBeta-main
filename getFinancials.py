@@ -46,7 +46,7 @@ def getPrice(tokenData):
             usdValue.append(usdt[1])
  
     # remove unwanted characters
-    price = usdValue[0]
+    price = usdValue
     price = re.sub('A-Za-z0-9.', '', price)
     price = float(price)
 

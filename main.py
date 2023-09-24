@@ -5,8 +5,11 @@ import os
 
 
 # the code is pretty heavy on API usage - will require more efficient use for scaling
+def clear():
+    lambda : os.system('tput reset')
 
-clear = lambda : os.system('tput reset')
+    1
+
 clear()
 
 # function for updating prices of BTC ETH (UI example)
@@ -21,7 +24,8 @@ mPrice = menuPrices()
 
 # basic UI example
 
-print(f'  MENU \t\t\t\t BTC Price: ${round(mPrice[0],2)} \t ETH Price: ${round(mPrice[1],2)} \n ___________________ \n \n 1. Ethereum \n \n ___________________\n\n 2. Live price feed \n\n')
+print(f'  MENU \t\t\t\t BTC Price: ${round(mPrice[0],2)} \t ETH Price: ${round(mPrice[1],2)}') 
+print("n ___________________ \n \n 1. Ethereum \n \n ___________________\n\n 2. Live price feed \n\n")
 choice = input("Choose option: ")
 print(" ")
 
@@ -33,7 +37,7 @@ elif choice == "2":
 
 clear()
 
-print(f'Menu \n ___________________ \n\n1. Use standard address \n')
+print("Menu \n ___________________ \n\n1. Use standard address \n")
 print("2. Manual input wallet")
 print("___________________\n")
 
