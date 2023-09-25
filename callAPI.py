@@ -39,7 +39,7 @@ def reqcAPI(chain,address,what,name): # constructors for balance request URL, Cr
     if what == "tx": # for grabbing transactions
 
         what = str("transactions")
-        limit = "&limit=50&offset=0"
+        limit = "&limit=50&offset=0" # edit limit to grab more transactions
         address = f'/addresses/{address}'
         reqTx = str(f'{url}{chain}/{network}{address}/{what}?context={name}{limit}')
 
@@ -77,6 +77,7 @@ def processTx(dec):
     dec = dec[6]
     return dec
 # return lists (ticker, balance) for combined portfolio
+
 def cAPIBal(chain,address,what,name): 
 
     headers = getHeaders()

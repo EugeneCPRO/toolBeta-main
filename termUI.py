@@ -1,4 +1,4 @@
-import json
+import keyboard
 import cleanUp
 import itertools
 
@@ -19,23 +19,34 @@ def displayPort(portfolio,name,chain):
     cleanUp.wipe()
     tickers = portfolio[0]
     balances = portfolio[1]
-    
+
     print(f'\n{name}, {chain} Portfolio Stats')
     print('---------------------------------------')
 
 
     for a, b in itertools.zip_longest(tickers, balances):
         print(a, b)
+        print ("\nPress Enter to continue...")
+        keyboard.wait('enter')
+
+        # call menu function
 
     return
 
 def displayTransactions(transactions, name, chain):
-     
+
+    import json
+
     # setup display
     cleanUp.wipe()
     print(f'\n{name}, {chain} Transaction History')
     print('---------------------------------------')
-    print(json.dumps(transactions,indent=4))
+    print(f'{json.dumps(transactions,indent=4)}\n')
+    print ("\nPress Enter to continue...")
+    keyboard.wait('enter')
+
+    # call menu function
+
 
     return 
 

@@ -3,7 +3,7 @@
 
 import re
 import ast
-import os
+
 
 class cleanUp(object):
         def __init__(self, price, balance, value):
@@ -36,7 +36,7 @@ def getBalances(dec):
         for token in dec:
             token = token.get("confirmedBalance")
             balances.append(token)
-
+ 
     else:
         token = dec.get("amount") # L1 tokens only
         balances.append(token)

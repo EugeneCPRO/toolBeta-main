@@ -1,7 +1,5 @@
 
-
-
-      
+# work in progress
 
 import gspread
 import numpy as np
