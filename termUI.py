@@ -2,6 +2,9 @@ import json
 import cleanUp
 import itertools
 
+
+# basic terminal print, will work on better display - potentially to a gSheet (WIP)
+
 # class for printing data
 
 class termUI(object):
@@ -9,13 +12,14 @@ class termUI(object):
             self.display = display
 
 
+# display portfolio
 def displayPort(portfolio,name,chain):
-      
+
+    # initialise
     cleanUp.wipe()
     tickers = portfolio[0]
     balances = portfolio[1]
-
-    # set up display
+    
     print(f'\n{name}, {chain} Portfolio Stats')
     print('---------------------------------------')
 

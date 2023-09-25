@@ -9,6 +9,7 @@ network = str("mainnet")
 http = urllib3.PoolManager()
 url = str("https://rest.cryptoapis.io/v2/blockchain-data/")
 
+# API call functions
 class callAPI(object):
         def __init__(self, chain, network, address):
             self.chain = chain
@@ -25,9 +26,9 @@ def getHeaders():
 
     return headers
 
-def reqcAPI(chain,address,what,name): # constructors for API request URL (CryptoAPIs)
+def reqcAPI(chain,address,what,name): # constructors for balance request URL, CryptoAPIs
 
-    if what == "bal": # for viewing portfolio
+    if what == "bal": # for grabbing portfolio
         cBal = str(f'/balance?context={name}') # const ETH balance
         cTok = str(f'/tokens?context={name}') # const ERC-20 balance
 
@@ -49,11 +50,12 @@ def reqJson(rawData):
 
     data = json.loads(rawData) # convert data to json (works for anything)
     data = pandas.json_normalize([data], max_level=2)
-    data = data.T # transpose, data in rows
+    data = data.T # transpose, data in rows - allows items to be pulled later
 
     return data
 
-def processTokens(dec): # collect relevant data (tickers & balances)
+# collect relevant data (tickers & balances)
+def processTokens(dec): 
 
     dec = dec.values.tolist()
     dec = sum(dec,[])
@@ -68,13 +70,14 @@ def processTokens(dec): # collect relevant data (tickers & balances)
 
     return tickers, balances
 
+# create tx list from imported app/json
 def processTx(dec):
     dec = dec.values.tolist()
     dec = sum(dec,[])
     dec = dec[6]
     return dec
-
-def cAPIBal(chain,address,what,name): # return lists (ticker, balance) for combined portfolio
+# return lists (ticker, balance) for combined portfolio
+def cAPIBal(chain,address,what,name): 
 
     headers = getHeaders()
 
@@ -87,7 +90,7 @@ def cAPIBal(chain,address,what,name): # return lists (ticker, balance) for combi
     format1,format2 = reqJson(dec1),reqJson(dec2) # create data structure - L1, Tokens
     format1,format2  = processTokens(format1),processTokens(format2) # make data legible
 
-    # combine tickers and balances
+    # combine ticker/balance lists
     tick1,bal1,tick2,bal2 = format1[0],format1[1],format2[0],format2[1]
     tickers = tick1 + tick2
     balances = bal1 + bal2
@@ -96,7 +99,7 @@ def cAPIBal(chain,address,what,name): # return lists (ticker, balance) for combi
     tickers = cleanUp.Tick(tickers)
     balances = cleanUp.Bal(balances)
 
-    return tickers,balances # L1 Balance, tok balance, combined data
+    return tickers,balances # L1 Balance, tok balance
 
 # get transaction data for user wallet
 def cAPItx(chain,address,what,name):
@@ -105,8 +108,11 @@ def cAPItx(chain,address,what,name):
     reqs = reqcAPI(chain,address,what,name)
     reqs = http.request("GET",reqs, headers=headers)
 
+    # decode response
     dec = reqs.data.decode("utf-8")
     dec = reqJson(dec)
     formatTx = processTx(dec)
+
+
 
     return formatTx
