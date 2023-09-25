@@ -1,10 +1,8 @@
 # toolBeta-main
 
-TO DO:
+- Work in progress
+- I'm not a professional dev, but I can get the basics up and running
+- Code needs optimised
+- See issues for more details and ongoing updates
 
-- fix issue with first and last iterations of tickers - [  ] (PRIORITY)
-- create database, for each wallet entered to reduce the load on API. (PRIORITY
--     API should only be used to update previous calls
-- check code works for other chains
-- 
-- 
+
