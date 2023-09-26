@@ -63,6 +63,13 @@ def Bal(balance):
     return balance # as list of floats
 
 
+# search for transactions based on type
+def txSearch(transactions, txType):
+    data = []
+    for search in transactions:
+         
+
+
 # search and cleanup price output, call in loop
 def Price(price):
 

@@ -1,4 +1,6 @@
 import cleanUp
+import callAPI
+import termUI
 import GUI
 #import pdb
 
@@ -24,7 +26,7 @@ cleanUp.wipe()
 #termUI.displayPort(portfolio,name,chain)
 
 # get transactions
-# transactions = callAPI.cAPItx(chain,address,what,name)
-# termUI.displayTransactions(transactions, name, chain)
+transactions = callAPI.cAPItx(chain,address,what,name)
+termUI.displayTransactions(transactions, name, chain)
 
-GUI.main_Menu()
+#GUI.main_Menu()
