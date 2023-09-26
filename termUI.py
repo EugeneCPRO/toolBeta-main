@@ -23,7 +23,6 @@ def displayPort(portfolio,name,chain):
     print(f'\n{name}, {chain} Portfolio Stats')
     print('---------------------------------------')
 
-
     for a, b in itertools.zip_longest(tickers, balances):
         print(a, b)
         print ("\nPress Enter to continue...")

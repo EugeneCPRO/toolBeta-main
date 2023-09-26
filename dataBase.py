@@ -33,16 +33,22 @@ def deleteFile(filename):
 # read from data base
 def readFrom(filename):
 
-    with open('sampletxOutput.json')as file: # replace sample doc with "filename"
-        transactions = file.read()
-        transactions = json.loads(transactions)
+    with open(filename)as file: # replace sample doc with "filename"
+        data = file.read()
+        data = json.loads(data)
 
-    return 
+    return data
 
 # write data to file
-def writeTo(filename, data): # this should dynamically alter, append, remove data
+def writeTo(filename, data): # this should dynamically alter, append, remove data (dict)
             
-    data = readFrom(filename)
+    prevFile = readFrom(filename) # open file
+
+    # alter data (example, will be if statements)
+    upFile = prevFile.append(data) # other functions will be implemented as required
+
+    # update file 
+    json.dump(upFile, filename)
 
     # alter data
 
