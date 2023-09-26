@@ -3,8 +3,7 @@ import pandas
 import json
 import cleanUp
 
-
-
+# unless testnet required, network is always mainnet
 network = str("mainnet")
 http = urllib3.PoolManager()
 url = str("https://rest.cryptoapis.io/v2/blockchain-data/")
@@ -39,7 +38,7 @@ def reqcAPI(chain,address,what,name): # constructors for balance request URL, Cr
     if what == "tx": # for grabbing transactions
 
         what = str("transactions")
-        limit = "&limit=50&offset=0" # edit limit to grab more transactions
+        limit = "&limit=100&offset=0" # transaction limit defaulted to 100
         address = f'/addresses/{address}'
         reqTx = str(f'{url}{chain}/{network}{address}/{what}?context={name}{limit}')
 

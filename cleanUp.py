@@ -64,10 +64,10 @@ def Bal(balance):
 
 
 # search for transactions based on type
-def txSearch(transactions, txType):
-    data = []
-    for search in transactions:
-         
+# def txSearch(transactions, txType):
+#     data = []
+#     for search in transactions:
+#          search = search.get("")
 
 
 # search and cleanup price output, call in loop
