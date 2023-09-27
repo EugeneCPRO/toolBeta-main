@@ -1,12 +1,16 @@
+import numpy as np
 import urllib3
 import pandas
 import json
 import cleanUp
+import time
 
 # unless testnet required, network is always mainnet
 network = str("mainnet")
 http = urllib3.PoolManager()
 url = str("https://rest.cryptoapis.io/v2/blockchain-data/")
+mUrl = str("https://rest.cryptoapis.io/market-data/exchange-rates/by-symbols/")
+
 
 # API call functions
 class callAPI(object):
@@ -15,7 +19,7 @@ class callAPI(object):
             self.network = network
             self.address = address
 
-# test API calls
+#CryptoAPIs keys
 def getHeaders():
 
     headers = {
@@ -25,11 +29,11 @@ def getHeaders():
 
     return headers
 
-def reqcAPI(chain,address,what,name): # constructors for balance request URL, CryptoAPIs
+def reqcAPI(chain,address,what,name): # constructors for balance/transaction request URL
 
     if what == "bal": # for grabbing portfolio
         cBal = str(f'/balance?context={name}') # const ETH balance
-        cTok = str(f'/tokens?context={name}') # const ERC-20 balance
+        cTok = str(f'/tokens?context={name}&limit=50&offset=0') # const ERC-20 balance
 
         reqBal = url+chain+"/"+network+"/addresses/"+address+cBal
         reqTok = url+chain+"/"+network+"/addresses/"+address+cTok
@@ -43,6 +47,7 @@ def reqcAPI(chain,address,what,name): # constructors for balance request URL, Cr
         reqTx = str(f'{url}{chain}/{network}{address}/{what}?context={name}{limit}')
 
         return reqTx
+    
 
 # create data structure of portfolio
 def reqJson(rawData):
@@ -113,6 +118,50 @@ def cAPItx(chain,address,what,name):
     dec = reqJson(dec)
     formatTx = processTx(dec)
 
-
-
     return formatTx
+
+# get price in "base" for "ticker" asset, assign user name to request
+def cAPIPrice(ticker,base,name):
+    
+    now = int(time.time())
+    now = str(now)
+    tstamp = "Timestamp="+str(now)
+    context = f'context={name}&calculation'
+
+    reqUrl = f'{mUrl}{ticker}/{base}?{context}{tstamp}'
+
+    headers = getHeaders()
+
+    # get 
+    pReq = http.request("GET", reqUrl, headers = headers)
+    dec = pReq.data.decode("utf-8")
+    price = reqJson(dec)
+    price = pandas.DataFrame.to_numpy(price)
+    price = list(price)
+
+    # price is unavailable if index out of range
+    try:
+        price = price[6][0]
+    except IndexError:
+        print(f'Price of {ticker}/{base} unavailable!')
+        return float(0)
+    else:
+        return float(price)
+    
+
+# get portfolio balance values   
+def balValue(portfolio,name):
+
+    base = "usd"
+    value = []
+    portfolio = np.array(portfolio, dtype=object)
+
+    for i in range(len(portfolio[0])):
+        # i believe this could be optimised by getting all assets with single call
+        val = portfolio[1][i] * cAPIPrice(portfolio[0][i],base,name)
+        str(val)
+        value.append(val)
+
+    total = sum(value)
+
+    return value, total

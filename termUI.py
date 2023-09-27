@@ -13,20 +13,28 @@ class termUI(object):
 
 
 # display portfolio
-def displayPort(portfolio,name,chain):
+def displayPort(portfolio,portValue,name,chain):
 
     # initialise
     cleanUp.wipe()
+    # remove scam tokens
+    portfolio = cleanUp.cleanPort(portfolio)
     tickers = portfolio[0]
     balances = portfolio[1]
+    value = portValue[0]
+    print(value)
 
     print(f'\n{name}, {chain} Portfolio Stats')
-    print('---------------------------------------')
+    print('------------------------------------------')
+    print("Asset\t| Balance\t| Value\n-----------------------")
 
-    for a, b in itertools.zip_longest(tickers, balances):
-        print(a, b)
-        print ("\nPress Enter to continue...")
-        keyboard.wait('enter')
+    for a, b, c in zip(tickers, balances, value):
+        print(f'{a}\t| {b}\t| ${c}')
+
+    print(f'\n\nTotal value: ${portValue[1]}')
+
+    print ("\nPress Enter to continue...")
+    keyboard.wait('enter')
 
         # call menu function
 
@@ -41,8 +49,6 @@ def displayTransactions(transactions, name, chain):
     print(f'\n{name}, {chain} Transaction History')
     print('---------------------------------------')
     print(f'{json.dumps(transactions,indent=4)}\n')
-    print ("\nPress Enter to continue...")
-    keyboard.wait('enter')
 
     # call menu function
 

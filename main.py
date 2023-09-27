@@ -1,4 +1,6 @@
 import json
+
+from aenum import LowerStrEnum
 import cleanUp
 import callAPI
 import termUI
@@ -11,21 +13,37 @@ cleanUp.wipe()
 # test inputs - will be part of menus
 chain = str("ethereum")
 address = str("0x8Be9987d18a10F770cADC94635CeDB2eF33B0f17")
-what = str("tx")
-name = str("Skin in the Game")
+what = str("bal") # tx = transactions, bal = balances
+name = str("SITG")
 filename = str("sampletxOutput.json")
 
-# grab portfolio stats
-#portfolio = callAPI.cAPIBal(what,name,chain,address)
 
 # display portfolio
-#termUI.displayPort(portfolio,name,chain)
+def showPortfolio():
+    portfolio = callAPI.cAPIBal(chain,address,what,name) # get balances 
+    portValue = callAPI.balValue(portfolio, name) # returns balance values & total
+
+    termUI.displayPort(portfolio,portValue,name,chain)
 
 # get transactions
-# transactions = callAPI.cAPItx(chain,address,what,name) # from API
-transactions = dataBase.readFrom(filename) # from file
+def showTransactions():
+    #transactions = callAPI.cAPItx(chain,address,what,name) # from API
+    transactions = dataBase.readFrom(filename) # from file
+    termUI.displayTransactions(transactions, name, chain)
 
-# display tx
-termUI.displayTransactions(transactions, name, chain)
+def showPrice():
+    price = callAPI.cAPIPrice("BTC", "usdt", name)
+    print(price)
 
-#GUI.main_Menu()
+def getPrice(ticker,base,name):
+    ticker = ticker.upper()
+    base = base.lower()
+    price = callAPI.cAPIPrice(ticker,base,name)
+    print(f'The price of {ticker} is ${price}')
+
+getPrice("THOR","RUNE","Eugene")
+
+#showPortfolio()
+
+
+

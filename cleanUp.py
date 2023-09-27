@@ -46,11 +46,13 @@ def getBalances(dec):
 
 # input processed token list, clean tickers
 def Tick(ticker):
-     
-    ticker = str(ticker)
-    ticker = re.sub('A-Z0-9', '', ticker)
-    ticker = ticker.split(',')
-    return ticker # as list 
+
+    tkList = []
+    for x in ticker:
+        ticker = re.sub(",^0-9a-zA-Z", '', x)
+        tkList.append(ticker)
+
+    return tkList # as list 
 
 # input processed balances, clean balances, return float for usage later
 def Bal(balance):
@@ -59,6 +61,7 @@ def Bal(balance):
     balance = re.sub('0-9.', '', balance)
     balance = ast.literal_eval(balance)
     balance = list(map(float, balance))
+    balance = [round(elem,5) for elem in balance] 
 
     return balance # as list of floats
 
@@ -80,17 +83,24 @@ def Price(price):
 
     return price # as float
 
-# remove unwanted assets
-# def valPort(tickers,balances):
-#           for token in tickers:
-#                if len(token) > 7:
-#                     tickers.remove(token)
-#                     balances.remove(token)
+#remove unwanted assets
+def cleanPort(portfolio):
 
-#                     return tickers, balances
-     
+    fTick = []
+    upBal = []
+    print(portfolio)
+    for i, s in enumerate(portfolio[0]):
+        # scam tokens tend to have a space, remove
+        if ' ' not in s: # scam tokens tend to have a space, remove 
+            fTick.append(s)
+            upBal.append(portfolio[1][i])
+        # else:
+        #     # remove corresponding element from balances
+        #     if i < len(upBal):
+        #         del upBal[i]
+    cleanPortfolio = fTick,upBal
 
-# clean portfolio value 
-#def Val(value):
+    return cleanPortfolio
 
-#    return value # as float
+        
+
