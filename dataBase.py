@@ -1,4 +1,5 @@
 
+from genericpath import isfile
 import json
 from pathlib import Path
 import keyboard
@@ -101,6 +102,20 @@ def writeTo(userPath, data): # this should dynamically alter, append, remove dat
 
     return 
 
+
+# combine chains to return overall portfolio
+def combineChains(name, what, chains):
+
+    direct = f'~/{name}/{what}/'
+    _,_, files = next(os.walk(direct))
+    file_count = len(files)
+
+    data = []
+    for i in range(file_count):
+         with open(f'~/{name}/{what}/{chains[i]}/{name}_{what}_{chains[i]}.json','r') as out_file:
+             data[i] = json.load(out_file)
+    print(data)
+    return
 
 
 

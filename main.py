@@ -13,6 +13,7 @@ chain = str("ethereum")
 address = str("0x8Be9987d18a10F770cADC94635CeDB2eF33B0f17")
 what = str("bal") # tx = transactions, bal = balances
 name = str("SITG")
+chains = "bitcoin","ethereum"
 
 #construct filename/check if file exists
 userPath = dataBase.consFileName(name,what,chain)
@@ -42,6 +43,7 @@ def showChainPortfolio(chain):
 
 # show total balances
 def showPortfolio():
+
     return
 
 
@@ -74,8 +76,9 @@ def getPrice(ticker,base,name):
 
 #showTransactions()
 
-showChainPortfolio()
+#showChainPortfolio()
 
+dataBase.combineChains(name,what,chains)
 
 
 
