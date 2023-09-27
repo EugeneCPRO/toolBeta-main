@@ -32,12 +32,17 @@ def getHeaders():
 def reqcAPI(chain,address,what,name): # constructors for balance/transaction request URL
 
     if what == "bal": # for grabbing portfolio
-        cBal = str(f'/balance?context={name}') # const ETH balance
-        cTok = str(f'/tokens?context={name}&limit=50&offset=0') # const ERC-20 balance
+        cBal = str(f'/balance?context={name}') # const balance
+        if chain == "ethereum":
+            cTok = str(f'/tokens?context={name}&limit=50&offset=0') # const ERC-20 balance
 
+            reqBal = url+chain+"/"+network+"/addresses/"+address+cBal
+            reqTok = url+chain+"/"+network+"/addresses/"+address+cTok
+            return reqBal, reqTok # return request URLs: L1 bal (e.g. ETH), token bal
+        
         reqBal = url+chain+"/"+network+"/addresses/"+address+cBal
-        reqTok = url+chain+"/"+network+"/addresses/"+address+cTok
-        return reqBal, reqTok # return request URLs: L1 bal (e.g. ETH), token bal
+        print(reqBal)
+        return reqBal
     
     if what == "tx": # for grabbing transactions
 
@@ -48,7 +53,6 @@ def reqcAPI(chain,address,what,name): # constructors for balance/transaction req
 
         return reqTx
     
-
 # create data structure of portfolio
 def reqJson(rawData):
 
@@ -56,9 +60,12 @@ def reqJson(rawData):
     data = pandas.json_normalize([data], max_level=2)
     data = data.T # transpose, data in rows - allows items to be pulled later
 
+    print(data)
+
     return data
 
 # collect relevant data (tickers & balances)
+
 def processTokens(dec): 
 
     dec = dec.values.tolist()
@@ -86,25 +93,44 @@ def cAPIBal(chain,address,what,name):
 
     headers = getHeaders()
 
+
+    if chain == "ethereum":
+        reqs = reqcAPI(chain,address,what,name)
+        req1 = http.request("GET",reqs[0], headers=headers) # return L1 token balance
+        req2 = http.request("GET",reqs[1], headers=headers) # returns other tokens balance
+        dec1,dec2 = req1.data.decode("utf-8"),req2.data.decode("utf-8") # decode response
+
+        format1,format2 = reqJson(dec1),reqJson(dec2) # create data structure - L1, Tokens
+        format1,format2  = processTokens(format1),processTokens(format2) # make data legible
+
+        # combine ticker/balance lists
+        tick1,bal1,tick2,bal2 = format1[0],format1[1],format2[0],format2[1]
+        tickers = tick1 + tick2
+        balances = bal1 + bal2
+        tickers = cleanUp.Tick(tickers)
+        balances = cleanUp.Bal(balances)
+        return tickers,balances
+
+    else:
     # create request strings
-    reqs = reqcAPI(chain,address,what,name)
-    req1 = http.request("GET",reqs[0], headers=headers) # return L1 token balance
-    req2 = http.request("GET",reqs[1], headers=headers) # returns other tokens balance
-    dec1,dec2 = req1.data.decode("utf-8"),req2.data.decode("utf-8") # decode response
+        reqs = reqcAPI(chain,address,what,name)
+        reqs = http.request("GET",reqs, headers=headers)
+        dec = reqs.data.decode("utf-8")
 
-    format1,format2 = reqJson(dec1),reqJson(dec2) # create data structure - L1, Tokens
-    format1,format2  = processTokens(format1),processTokens(format2) # make data legible
+        format1 = reqJson(dec)
 
-    # combine ticker/balance lists
-    tick1,bal1,tick2,bal2 = format1[0],format1[1],format2[0],format2[1]
-    tickers = tick1 + tick2
-    balances = bal1 + bal2
+        # format1 = np.array(format1)
+        format1 = processTokens(format1)
+
+        tickers,balances = format1[0], format1[1]
+        print(tickers, balances)
+        tickers = cleanUp.Tick(tickers)
+        balances = cleanUp.Bal(balances)
+
+        print(tickers,balances)
+        return tickers,balances
     
-    # final format
-    tickers = cleanUp.Tick(tickers)
-    balances = cleanUp.Bal(balances)
 
-    return tickers,balances # L1 Balance, tok balance
 
 # get transaction data for user wallet
 def cAPItx(chain,address,what,name):
@@ -155,7 +181,7 @@ def balValue(portfolio,name):
     base = "usd"
     value = []
     portfolio = np.array(portfolio, dtype=object)
-
+    print(portfolio[0][0], portfolio[1][0])
     for i in range(len(portfolio[0])):
         # i believe this could be optimised by getting all assets with single call
         val = portfolio[1][i] * cAPIPrice(portfolio[0][i],base,name)

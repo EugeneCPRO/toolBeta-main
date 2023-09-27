@@ -18,7 +18,6 @@ def displayPort(portfolio,portValue,name,chain):
     # initialise
     cleanUp.wipe()
     # remove scam tokens
-    portfolio = cleanUp.cleanPort(portfolio)
     tickers = portfolio[0]
     balances = portfolio[1]
     value = portValue[0]
@@ -26,7 +25,8 @@ def displayPort(portfolio,portValue,name,chain):
 
     print(f'\n{name}, {chain} Portfolio Stats')
     print('------------------------------------------')
-    print("Asset\t| Balance\t| Value\n-----------------------")
+    print("Asset\t| Balance\t| Value")
+    print('------------------------------------------')
 
     for a, b, c in zip(tickers, balances, value):
         print(f'{a}\t| {b}\t| ${c}')

@@ -1,6 +1,7 @@
 
 # class for cleaning up strings
 
+from operator import and_
 import re
 import ast
 
@@ -89,15 +90,13 @@ def cleanPort(portfolio):
     fTick = []
     upBal = []
     print(portfolio)
+    rndBalance = [round(elem,5) for elem in portfolio[1]]
     for i, s in enumerate(portfolio[0]):
         # scam tokens tend to have a space, remove
-        if ' ' not in s: # scam tokens tend to have a space, remove 
+        if (' ' not in s or len(s)<7) and rndBalance[i] != 0: # scam tokens tend to have a space + remove 0 bal
             fTick.append(s)
             upBal.append(portfolio[1][i])
-        # else:
-        #     # remove corresponding element from balances
-        #     if i < len(upBal):
-        #         del upBal[i]
+
     cleanPortfolio = fTick,upBal
 
     return cleanPortfolio
