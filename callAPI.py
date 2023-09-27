@@ -1,3 +1,4 @@
+from aenum import LowerStrEnum
 import numpy as np
 import urllib3
 import pandas
@@ -41,16 +42,14 @@ def reqcAPI(chain,address,what,name): # constructors for balance/transaction req
             return reqBal, reqTok # return request URLs: L1 bal (e.g. ETH), token bal
         
         reqBal = url+chain+"/"+network+"/addresses/"+address+cBal
-        print(reqBal)
         return reqBal
     
     if what == "tx": # for grabbing transactions
 
         what = str("transactions")
-        limit = "&limit=100&offset=0" # transaction limit defaulted to 100
+        limit = "&limit=50&offset=0" # transaction limit defaulted to 100
         address = f'/addresses/{address}'
         reqTx = str(f'{url}{chain}/{network}{address}/{what}?context={name}{limit}')
-
         return reqTx
     
 # create data structure of portfolio
@@ -94,7 +93,7 @@ def cAPIBal(chain,address,what,name):
     headers = getHeaders()
 
 
-    if chain == "ethereum":
+    if chain == "ethereum" and what == "bal" :
         reqs = reqcAPI(chain,address,what,name)
         req1 = http.request("GET",reqs[0], headers=headers) # return L1 token balance
         req2 = http.request("GET",reqs[1], headers=headers) # returns other tokens balance
@@ -111,23 +110,19 @@ def cAPIBal(chain,address,what,name):
         balances = cleanUp.Bal(balances)
         return tickers,balances
 
-    else:
+    elif what == "bal":
     # create request strings
         reqs = reqcAPI(chain,address,what,name)
         reqs = http.request("GET",reqs, headers=headers)
         dec = reqs.data.decode("utf-8")
 
         format1 = reqJson(dec)
-
-        # format1 = np.array(format1)
         format1 = processTokens(format1)
-
+        
         tickers,balances = format1[0], format1[1]
-        print(tickers, balances)
         tickers = cleanUp.Tick(tickers)
         balances = cleanUp.Bal(balances)
 
-        print(tickers,balances)
         return tickers,balances
     
 

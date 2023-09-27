@@ -3,8 +3,6 @@ import json
 from pathlib import Path
 import keyboard
 import os
-import pandas
-
 
 # file i/o class
 
@@ -13,33 +11,39 @@ class dataBase(object):
             self.init = init
 
 # construct new filename/check exists
-def consFileName(name, what,chain): # who, and what data (tx, balance, etc.)
-    filename = str(f'{name}_{chain}_{what}.json')
-    my_file = Path(filename)
+def consFileName(name,chain,what): # who, and what data (tx, balance, etc.)
+    newpath = f'~/{name}/{chain}/{what}'
+    if not os.path.exists(newpath):
+         os.makedirs(newpath)
+
+    filename = str(f'/{name}_{chain}_{what}.json')
+    userPath = newpath+filename
+    print(userPath)
+    my_file = Path(userPath)
     try:
         my_file = my_file.resolve(strict=True)
 
     except FileNotFoundError:
             print("File not found... Creating file...")
-            my_file = open(filename, 'x')
+            my_file = open(userPath, 'x')
             my_file.close()
-            return filename
+            return userPath
     else:
         print('File exists!')
-        return filename
+        return userPath
 
 # scrub file from database 
-def deleteFile(filename):
+def deleteFile(userPath):
 
     # delete file
 
-    my_file = Path(filename)
+    my_file = Path(userPath)
     try:
         my_file = my_file.resolve(strict=True)
     except FileNotFoundError:
          print("Already deleted!")
     else:
-        os.remove(filename)
+        os.remove(userPath)
         print("File deleted!")
         print ("\nPress Enter to continue...")
         keyboard.wait('enter')
@@ -47,9 +51,9 @@ def deleteFile(filename):
         return 
 
 # read from data base
-def readFrom(filename):
+def readFrom(userPath):
 
-    my_file = Path(filename)
+    my_file = Path(userPath)
     try:
         my_file = my_file.resolve(strict=True)
     except FileNotFoundError:
@@ -57,24 +61,22 @@ def readFrom(filename):
          
     else:
         try:
-            with open(filename)as file: 
-                data = file.read()
-                data = json.loads(data)
+            with open(userPath,'r') as my_file: 
+                data = json.load(my_file)
+                my_file.close()
+                return data
         except json.decoder.JSONDecodeError:
             print("No data on file...\n")
             print("Running API call to populate database...")
-            print ("\nPress Enter to continue...")
+            print("\nPress Enter to continue...")
             keyboard.wait('enter')
-
-        return data
-
 
 
 
 # write data to file
-def writeTo(filename, data): # this should dynamically alter, append, remove data
+def writeTo(userPath, data): # this should dynamically alter, append, remove data
 
-    my_file = Path(filename)
+    my_file = Path(userPath)
     try:
         my_file = my_file.resolve(strict=True)
     except FileNotFoundError:
@@ -91,12 +93,14 @@ def writeTo(filename, data): # this should dynamically alter, append, remove dat
     else:
     # alter data (example, will be if statements)
 
-        with open(filename,'w') as out_file:
-            newData = json.dumps(data)
+        with open(userPath,'w') as out_file:
             # update file 
-            json.dump(newData, out_file, indent=6)
+            json.dump(data, out_file, indent=6)
+            out_file.truncate()
             out_file.close()
 
     return 
+
+
 
 

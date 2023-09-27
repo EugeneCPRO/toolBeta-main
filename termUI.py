@@ -1,6 +1,6 @@
 import keyboard
 import cleanUp
-import itertools
+
 
 
 # basic terminal print, will work on better display - potentially to a gSheet (WIP)

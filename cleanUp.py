@@ -1,7 +1,7 @@
 
 # class for cleaning up strings
 
-from operator import and_
+
 import re
 import ast
 
@@ -42,6 +42,7 @@ def getBalances(dec):
         token = dec.get("amount") # L1 tokens only
         balances.append(token)
 
+    balances = Bal(balances)
     return balances # as string list
 
 
@@ -86,14 +87,13 @@ def Price(price):
 
 #remove unwanted assets
 def cleanPort(portfolio):
-
     fTick = []
     upBal = []
-    print(portfolio)
+
     rndBalance = [round(elem,5) for elem in portfolio[1]]
     for i, s in enumerate(portfolio[0]):
-        # scam tokens tend to have a space, remove
-        if (' ' not in s or len(s)<7) and rndBalance[i] != 0: # scam tokens tend to have a space + remove 0 bal
+        # scam tokens tend to have a space, remove + any 0 balances
+        if (' ' not in s or len(s)<7) and rndBalance[i] != 0: 
             fTick.append(s)
             upBal.append(portfolio[1][i])
 

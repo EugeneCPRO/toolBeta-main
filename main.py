@@ -1,48 +1,65 @@
-import json
 
-from aenum import LowerStrEnum
+import json
 import cleanUp
 import callAPI
 import termUI
-import GUI
 import dataBase
 
 cleanUp.wipe()
 #GUI.main_Menu()
 
 # test inputs - will be part of menus
-chain = str("bitcoin")
-address = str("bc1qzpppmek8wh2vqymq06petmfwmhjj9k8vdxl389")
+chain = str("ethereum")
+address = str("0x8Be9987d18a10F770cADC94635CeDB2eF33B0f17")
 what = str("bal") # tx = transactions, bal = balances
 name = str("SITG")
 
 #construct filename/check if file exists
-filename = dataBase.consFileName(name,what,chain)
-print(filename)
+userPath = dataBase.consFileName(name,what,chain)
+print(userPath)
 
 # update portfolio 
-def getPortfolio(filename,chain,address,what,name):
+def getPortfolio(userPath,chain,address,what,name):
     portfolio = callAPI.cAPIBal(chain,address,what,name)
     portfolio = cleanUp.cleanPort(portfolio)
-    dataBase.writeTo(filename, portfolio)
+    dataBase.writeTo(userPath, portfolio)
     return portfolio
 
-# display portfolio
-def showPortfolio():
+# display chain specific portfolio
+def showChainPortfolio(chain):
     # check if portfolio exists in database
-    portfolio = dataBase.readFrom(filename)
+    portfolio = dataBase.readFrom(userPath)
 
     if not portfolio:
-        portfolio = getPortfolio(filename,chain,address,what,name)
-    
-    portValue = callAPI.balValue(portfolio, name) # returns balance values & total
+        portfolio = getPortfolio(userPath,chain,address,what,name)
+
+    #clean loaded portfolio
+    portfolio = cleanUp.Tick(portfolio[0]), cleanUp.Bal(portfolio[1])
+    # returns balance values & total, lighter on API
+    portValue = callAPI.balValue(portfolio, name) 
+
     termUI.displayPort(portfolio,portValue,name,chain)
 
+# show total balances
+def showPortfolio():
+    return
+
+
+def getTransactions(userPath,chain,address,what,name):
+    transactions = callAPI.cAPItx(chain,address,what,name)
+    dataBase.writeTo(userPath, transactions)
+    return transactions
+
+
 # get transactions
-def showTransactions(filename):
-    #transactions = callAPI.cAPItx(chain,address,what,name) # from API
-    transactions = dataBase.readFrom(filename) # from file
+def showTransactions():
+    transactions = dataBase.readFrom(userPath) # from file
+    if not transactions:
+        transactions = getTransactions(userPath,chain,address,what,name)
+        
     termUI.displayTransactions(transactions, name, chain)
+
+
 
 def showPrice():
     price = callAPI.cAPIPrice("BTC", "usdt", name)
@@ -54,9 +71,12 @@ def getPrice(ticker,base,name):
     price = callAPI.cAPIPrice(ticker,base,name)
     print(f'The price of {ticker} is ${price}')
 
-#getPrice("THOR","RUNE","Eugene")
 
-showPortfolio()
+#showTransactions()
+
+showChainPortfolio()
+
+
 
 
 
